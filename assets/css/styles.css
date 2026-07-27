@@ -71,9 +71,12 @@
   --text-lead: clamp(1.1rem, 1.1vw, 1.25rem);
   --text-h4: clamp(1.2rem, 1.4vw, 1.4rem);
   --text-h3: clamp(1.55rem, 2.2vw, 2rem);
-  --text-h2: clamp(2.15rem, 3.7vw, 3.25rem);
-  --text-h1: clamp(2.75rem, 5vw, 4.25rem);
-  --text-display: clamp(3.25rem, 7vw, 5.25rem);
+  /* Floors lowered from the guideline's 2.15rem / 2.75rem: at a 360px phone the
+     original minimums forced the hero heading to wrap inside its reveal mask
+     (5 visual lines instead of 3). Desktop sizes are unchanged. */
+  --text-h2: clamp(1.9rem, 3.7vw, 3.25rem);
+  --text-h1: clamp(2.5rem, 5vw, 4.25rem);
+  --text-display: clamp(2.75rem, 7vw, 5.25rem);
 
   /* Reading widths */
   --measure-body: 66ch;
@@ -170,6 +173,9 @@ h4 {
   font-family: var(--font-display);
   color: var(--text-primary);
   text-wrap: balance;
+  /* Safety net so a long service or place name can never push a narrow phone
+     layout sideways */
+  overflow-wrap: break-word;
 }
 
 h1 {
@@ -997,7 +1003,11 @@ small,
 
 .header__link {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  /* The desktop nav also appears on touch tablets from 960px up, so the rows
+     need a 44px target rather than the 41px that tighter padding produced */
+  min-height: 2.75rem;
   padding-block: var(--space-2);
   color: #fff;
   font-size: 0.95rem;
@@ -1192,14 +1202,22 @@ small,
   transform: rotate(-45deg);
 }
 
-/* Mobile drawer */
+/* Mobile drawer.
+   The [hidden] rule matters: `display: grid` on the class would otherwise beat
+   the browser's default [hidden] styling, leaving the closed drawer in the
+   layout where its translateX offset pushes the document wider than the
+   viewport. */
+.mobile-menu[hidden] {
+  display: none;
+}
+
 .mobile-menu {
   position: fixed;
   inset: 0;
   z-index: var(--z-menu);
   display: grid;
   grid-template-rows: 1fr auto;
-  padding: 6rem var(--gutter) calc(var(--space-6) + env(safe-area-inset-bottom));
+  padding: 5.5rem var(--gutter) calc(var(--space-5) + env(safe-area-inset-bottom));
   background: var(--gradient-brand);
   color: #fff;
   visibility: hidden;
@@ -1244,11 +1262,14 @@ small,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-block: var(--space-4);
+  /* Eight links plus the contact buttons have to fit a 640px-tall phone, so the
+     rows stay compact while keeping a 48px+ touch target */
+  min-height: 3rem;
+  padding-block: var(--space-3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   color: #fff;
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-decoration: none;
@@ -1269,10 +1290,16 @@ small,
   transform: translateX(4px);
 }
 
+/* Pinned to the bottom of the drawer so Call and WhatsApp stay reachable even
+   when the link list has to scroll on a short screen */
 .mobile-menu__actions {
+  position: sticky;
+  bottom: 0;
   display: grid;
   gap: var(--space-3);
-  padding-top: var(--space-6);
+  margin-top: var(--space-4);
+  padding-top: var(--space-5);
+  background: linear-gradient(180deg, rgba(1, 29, 62, 0) 0%, rgba(1, 29, 62, 0.92) 42%);
   opacity: 0;
   transform: translateY(18px);
 }
@@ -1289,8 +1316,9 @@ small,
   display: flex;
   align-items: flex-end;
   min-height: min(46rem, 100svh);
-  padding-top: 9rem;
-  padding-bottom: var(--space-8);
+  /* Header is ~4.5rem on phones, so 7.5rem clears it without wasting the fold */
+  padding-top: 7.5rem;
+  padding-bottom: var(--space-7);
   background: var(--brand-darkest);
   color: #fff;
   overflow: hidden;
@@ -1391,12 +1419,14 @@ small,
   margin-top: var(--space-6);
 }
 
+/* Flex rather than grid so each claim sizes to its own text and wraps
+   naturally, instead of being forced into equal tracks that break words */
 .hero__trust {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-5);
-  margin-top: var(--space-7);
-  padding-top: var(--space-5);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
   border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -2482,9 +2512,11 @@ small,
   align-items: start;
 }
 
+/* Two across wherever the longest place name fits, one across on narrow
+   phones, rather than forcing two cramped columns at every width */
 .areas__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
   gap: var(--space-3);
 }
 
@@ -3492,9 +3524,11 @@ small,
   height: 1.2rem;
 }
 
+/* Pairs up the link columns on phones so the footer is not one long stack */
 .footer__cols {
   display: grid;
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-6) var(--space-5);
 }
 
 .footer__col h3 {
@@ -4055,9 +4089,13 @@ small,
     margin-bottom: var(--space-6);
   }
 
-  /* Keep the fixed contact bar clear of page content */
+}
+
+/* The fixed contact bar is present below 60rem, so the page must reserve room
+   for it across that whole range - not just on the narrowest phones. */
+@media (max-width: 59.999rem) {
   body {
-    padding-bottom: 3.5rem;
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -4066,6 +4104,27 @@ small,
   .emergency__actions .button,
   .final-cta__actions .button {
     width: 100%;
+  }
+}
+
+/* The hero heading carries fixed line breaks for its mask reveal, so it cannot
+   reflow. These two steps keep it on three lines at the two narrow widths that
+   still matter: 360px (most entry-level Androids) and 320px (oldest handsets).
+   Measured against the longest line, "services in Polokwane". */
+@media (max-width: 22.5rem) {
+  :root {
+    --text-h1: 2.35rem;
+    --text-h2: 1.75rem;
+  }
+
+  .mobile-menu__link {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 20rem) {
+  :root {
+    --text-h1: 2.05rem;
   }
 }
 

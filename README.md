@@ -204,7 +204,17 @@ forbids invented numbers.
 
 - Every text/background pair meets WCAG AA; most reach AAA. Footer links measure
   11.4:1 and hero copy 14.5:1 against their backgrounds.
-- All interactive controls are at least 44px in the touch dimension.
+- All interactive controls are at least 44px in the touch dimension, including
+  the desktop navigation, which is also touch-operated on tablets from 960px up.
+- Verified from 320px to 1440px. The hero heading carries fixed line breaks for
+  its mask reveal, so it cannot reflow; its size steps down at 360px and again
+  at 320px to stay on three lines. Measured against the longest line rather than
+  guessed.
+- The type scale floors are lower than the typography guideline specifies
+  (`2.5rem` rather than `2.75rem` for H1, `1.9rem` rather than `2.15rem` for H2).
+  At 360px — the common entry-level Android width the animation spec calls out —
+  the original minimums forced the hero heading to wrap to five lines and broke
+  the reveal. Desktop sizes are unchanged.
 - Full keyboard support with visible focus rings. The mobile drawer and the
   gallery lightbox trap focus while open and restore it on close.
 - `prefers-reduced-motion: reduce` disables all animation and reveals content
