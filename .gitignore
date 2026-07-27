@@ -1,0 +1,7 @@
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Build record only - not needed at runtime, and its source filenames
+# reveal internal asset provenance. Kept local.
+assets/images/manifest.json
