@@ -39,18 +39,49 @@ website/
 
 ---
 
-## Deploying
+## Current status: client preview
 
-Upload the whole `website/` folder to any static host — Netlify, Vercel,
-Cloudflare Pages, GitHub Pages, or ordinary cPanel hosting. There is nothing to
-compile.
+The site is deployed as a **private-in-practice preview**, not a production
+launch:
 
-Before going live, replace the placeholder domain
-`https://www.makgobaandsonsplumbing.co.za/` with the real domain in:
+- Live preview: <https://raafinco-art.github.io/makgoba-and-sons-plumbing/>
+- Repository: <https://github.com/raafinco-art/makgoba-and-sons-plumbing>
 
-- the `<link rel="canonical">` tag
-- the four `og:` / `twitter:` meta tags
-- the JSON-LD block at the bottom of `index.html` (several `@id` and `url` values)
+`index.html` carries `<meta name="robots" content="noindex, nofollow">`, so
+search engines will not list the temporary `github.io` address. This matters for
+two reasons: it stops the preview competing with the real domain later, and it
+keeps the placeholder review content out of search results.
+
+There is deliberately **no** `robots.txt` blocking crawlers. A `Disallow` rule
+would stop Google reading the page at all, which means it would never see the
+`noindex` instruction — the tag alone is the reliable method.
+
+The repository is public, so treat the preview link as shareable-with-the-client
+rather than secret. Anyone with the URL can view it.
+
+---
+
+## Going live
+
+A checklist for moving from preview to production.
+
+1. **Point the real domain at the host.** For GitHub Pages, add a `CNAME` file
+   containing `www.makgobaandsonsplumbing.co.za` and set the DNS records, or
+   redeploy the folder to Netlify, Vercel, Cloudflare Pages or cPanel hosting.
+   There is nothing to compile — upload `website/` as-is.
+2. **Remove the preview block** at the top of `<head>` in `index.html` and
+   restore `<meta name="robots" content="index, follow">`.
+3. **Confirm the production domain** is correct everywhere. If it differs from
+   `https://www.makgobaandsonsplumbing.co.za/`, update:
+   - the `<link rel="canonical">` tag
+   - the four `og:` / `twitter:` meta tags
+   - the JSON-LD block at the bottom of `index.html` (several `@id` and `url`
+     values)
+4. **Replace the placeholder reviews** — see the section below. Do not launch
+   with the placeholder cards visible.
+5. **Add the real operating hours** to the Contact section and the JSON-LD.
+6. Submit the domain to Google Search Console and register a Google Business
+   Profile — the structured data is already in place to support both.
 
 ---
 
