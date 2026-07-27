@@ -188,7 +188,14 @@
     if (progressBar) progressBar.style.transform = 'scaleX(' + p + ')';
     if (scrollTopBar) scrollTopBar.style.strokeDashoffset = String(RING * (1 - p));
     if (scrollTopBtn) scrollTopBtn.classList.toggle('is-shown', p > 0.4);
-    if (mobileBar) mobileBar.classList.toggle('is-shown', window.scrollY > 320);
+  }
+
+  /* The contact pills are not gated on scrolling - a visitor who lands with a
+     burst pipe should see Call and WhatsApp immediately. A short delay just lets
+     them ease in after the hero rather than snapping in on first paint. */
+  if (mobileBar) {
+    if (prefersReduced()) mobileBar.classList.add('is-shown');
+    else window.setTimeout(function () { mobileBar.classList.add('is-shown'); }, 700);
   }
 
   if (scrollTopBtn) {

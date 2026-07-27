@@ -182,8 +182,20 @@ script (it reads from `photos/Website phots/` and writes into
 the site's signature element. Its water level tracks scroll position, and each
 section branches off it with a pipe joint. It intentionally does three jobs the
 brief listed separately — scroll progress indicator, section divider, and brand
-motif — as one device rather than three competing ornaments. Below 1180px it is
-replaced by a thin progress bar at the top of the viewport.
+motif — as one device rather than three competing ornaments.
+
+It is anchored to the **centred content column**, not the viewport edge, and
+only appears above 83rem where there is genuine room for it beside the content.
+Below that a thin progress bar at the top of the viewport stands in. Anchoring
+it to the viewport edge is what made the page look pushed to the left when
+zoomed out: the rail and its branch lines stranded themselves in the far-left
+margin while the content stayed centred.
+
+**Mobile contact pills.** Call and WhatsApp sit in two floating pills at the
+bottom of the screen below 60rem, visible from load rather than after a scroll
+threshold — on a plumbing site the phone number is the product. The space they
+occupy is reserved inside the footer, not on the body, so the dark footer runs
+all the way to the bottom of the page.
 
 **The chevron notch.** The team portrait is masked with a notch taken from the
 angular "M" in the logo, tying the photography to the wordmark. It is used once,

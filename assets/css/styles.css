@@ -665,7 +665,12 @@ small,
   position: fixed;
   top: 0;
   bottom: 0;
-  left: var(--rail-gutter);
+  /* Anchored to the centred content column, not the viewport edge. Anchoring
+     it to the edge left the rail stranded in the far-left margin on wide
+     screens, which read as the whole page being pushed left. Sits 1.5rem
+     outside the container box. Uses % rather than vw so it lands on the same
+     centre line as the content, which is laid out inside the scrollbar. */
+  left: calc(50% - var(--container) / 2 - 1.5rem);
   z-index: var(--z-rail);
   display: none;
   width: 2px;
@@ -705,13 +710,18 @@ small,
 /* Per-section branch joint.
    Sits on the rail itself (--rail-gutter from the viewport edge) and branches
    right to meet the content edge, which at rail widths is --gutter + 2.25rem. */
+/* Branch takeoff from the riser into each section heading. Starts on the rail
+   and spans the 1.5rem outside the container plus its 2.5rem gutter, so it
+   always meets the content edge no matter how wide the viewport gets. */
 .rail-joint {
   position: absolute;
   top: var(--section-y);
-  left: calc(var(--rail-gutter) - 4.5px);
+  /* Shifted a further 3.5px left so the 9px joint node centres on the 2px
+     rail rather than starting flush with it */
+  left: calc(50% - var(--container) / 2 - 1.5rem - 3.5px);
   display: none;
   align-items: center;
-  width: calc(var(--gutter) + 2.25rem - var(--rail-gutter) + 4.5px);
+  width: calc(1.5rem + var(--gutter) + 3.5px);
   height: 12px;
   pointer-events: none;
 }
@@ -760,7 +770,10 @@ small,
   will-change: transform;
 }
 
-@media (min-width: 1180px) {
+/* The riser only appears once the centred column leaves genuine room for it
+   beside the content (76rem container + 1.5rem offset + breathing space).
+   Below this the thin top progress bar stands in for it. */
+@media (min-width: 83rem) {
   .rail {
     display: block;
   }
@@ -3663,11 +3676,11 @@ small,
 }
 
 .dock__item--whatsapp {
-  background: #128c3f;
+  background: #0f7a38;
 }
 
 .dock__item--whatsapp:hover {
-  background: #0d7233;
+  background: #0b662d;
 }
 
 /* Scroll to top with circular progress */
@@ -3731,24 +3744,26 @@ small,
   transition: stroke-dashoffset 120ms linear;
 }
 
-/* Mobile fixed contact bar */
+/* Mobile contact bar.
+   Two floating pills rather than a flat edge-to-edge strip, and present from
+   the moment the page loads - on a plumbing site the phone number is the
+   product, so it should never be more than a thumb away. */
 .mobile-bar {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   z-index: var(--z-dock);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  padding-bottom: env(safe-area-inset-bottom);
-  background: var(--border-default);
-  box-shadow: 0 -6px 20px -8px rgba(2, 44, 92, 0.24);
-  transform: translateY(100%);
-  transition: transform 320ms var(--ease-reveal);
+  gap: var(--space-3);
+  opacity: 0;
+  transform: translateY(140%);
+  transition: transform 420ms var(--ease-reveal), opacity 320ms ease-out;
 }
 
 .mobile-bar.is-shown {
+  opacity: 1;
   transform: translateY(0);
 }
 
@@ -3757,27 +3772,43 @@ small,
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3.5rem;
-  background: var(--surface-main);
-  color: var(--brand-primary);
-  font-size: 0.95rem;
+  min-height: 3.25rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
   font-weight: 600;
+  line-height: 1;
   text-decoration: none;
+  box-shadow: 0 10px 26px -8px rgba(2, 44, 92, 0.5), 0 2px 6px rgba(14, 27, 43, 0.18);
+  transition: transform var(--t-button) ease-out, background-color var(--t-button) ease-out;
+}
+
+.mobile-bar a:active {
+  transform: scale(0.97);
 }
 
 .mobile-bar a svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.mobile-bar a.is-whatsapp {
-  background: #128c3f;
-  color: #fff;
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .mobile-bar a.is-call {
-  background: var(--brand-primary);
+  background: var(--gradient-action);
   color: #fff;
+}
+
+.mobile-bar a.is-whatsapp {
+  background: #0f7a38;
+  color: #fff;
+}
+
+/* Very narrow handsets: keep both pills on one row by trimming the label */
+@media (max-width: 20rem) {
+  .mobile-bar a {
+    font-size: 0.9rem;
+    gap: 0.35rem;
+  }
 }
 
 /* Soft circular cursor follower, desktop pointer only */
@@ -4052,15 +4083,9 @@ small,
   }
 }
 
-@media (min-width: 1180px) {
-  /* Clear the riser rail */
-  .container,
-  .header__inner,
-  .hero__inner,
-  .pipe-divider {
-    padding-left: calc(var(--gutter) + 2.25rem);
-  }
-}
+/* No asymmetric padding for the rail: it previously pushed every section's
+   content 2.25rem right of true centre, which is visible as soon as you zoom
+   out. The rail now sits outside the container instead. */
 
 /* Eight navigation links plus two buttons do not fit at the lower desktop
    sizes, so the secondary WhatsApp button only appears once there is room. */
@@ -4094,8 +4119,11 @@ small,
 /* The fixed contact bar is present below 60rem, so the page must reserve room
    for it across that whole range - not just on the narrowest phones. */
 @media (max-width: 59.999rem) {
-  body {
-    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  /* Reserved inside the footer rather than on the body: padding on the body
+     leaves a strip of page background below the dark footer. The footer is
+     always the last element, so this is what the contact pills sit over. */
+  .footer {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }
 
