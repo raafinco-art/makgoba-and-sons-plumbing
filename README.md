@@ -218,6 +218,12 @@ forbids invented numbers.
   11.4:1 and hero copy 14.5:1 against their backgrounds.
 - All interactive controls are at least 44px in the touch dimension, including
   the desktop navigation, which is also touch-operated on tablets from 960px up.
+- Layout wrappers and the review carousel set `min-width: 0`. Grid and flex
+  items otherwise refuse to shrink below their content's intrinsic minimum, and
+  a nowrap flex row reports the *sum* of its children as that minimum. That is
+  what made the whole page wider than a phone screen, causing the browser to
+  shrink it to fit and leave the content sitting against the left edge. Do not
+  remove those declarations.
 - Verified from 320px to 1440px. The hero heading carries fixed line breaks for
   its mask reveal, so it cannot reflow; its size steps down at 360px and again
   at 320px to stay on three lines. Measured against the longest line rather than

@@ -448,6 +448,24 @@ small,
   gap: var(--space-5);
 }
 
+/* Grid and flex items default to min-width:auto, meaning they refuse to shrink
+   below their content's intrinsic minimum. A nowrap flex row (the reviews
+   carousel) reports the SUM of its slides as that minimum, which forced the
+   whole column wider than a phone screen and made the page shrink to fit.
+   Zeroing it on the layout wrappers stops that class of blowout everywhere. */
+.trust__inner > *,
+.about__layout > *,
+.emergency__inner > *,
+.commercial__layout > *,
+.areas__layout > *,
+.reviews__layout > *,
+.faq__layout > *,
+.quote__layout > *,
+.contact__layout > *,
+.grid > * {
+  min-width: 0;
+}
+
 /* --------------------------------------------------------------------------
    4. Buttons
    -------------------------------------------------------------------------- */
@@ -2640,9 +2658,14 @@ small,
 
 .slider {
   position: relative;
+  min-width: 0;
 }
 
+/* min-width:0 is what actually lets the carousel be narrower than the combined
+   width of its slides; overflow:hidden alone does not stop the intrinsic
+   minimum propagating to ancestors. */
 .slider__viewport {
+  min-width: 0;
   overflow: hidden;
   border-radius: var(--radius-lg);
 }
